@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"text/template"
+	"time"
 
 	"github.com/Talha2299/bookings/internal/config"
 	"github.com/Talha2299/bookings/internal/models"
@@ -16,13 +17,41 @@ import (
 
 var pathToTemplates = "./templates"
 
-var functions = template.FuncMap{}
+var functions = template.FuncMap{
+	"humanDate": HumanDate,
+	"formatDate": FormatDate,
+	"iterate": Iterate,
+	"add": Add,
+}
 
 var app *config.AppConfig
 
-// NewTeamplates set the config for the template package
-func NewTemplates(a *config.AppConfig) {
+// NewRenderer set the config for the template package
+func NewRenderer(a *config.AppConfig) {
 	app = a
+}
+
+func Add(a, b int) int {
+	return a + b
+}
+// Iterate return a slice of ints, starts at 1 and going to count
+func Iterate(count int) []int {
+	var i int
+	var items []int
+
+	for i=0;i<count;i++ {
+		items = append(items, i)
+	}
+	return items
+}
+
+// HumanDate reutrn time in YYYY-MM-DD format
+func HumanDate(t time.Time) string {
+	return t.Format("2006-01-02")
+}
+
+func FormatDate(t time.Time, f string) string {
+	return t.Format(f)
 }
 
 // AddDefaultData adds data for all templates
@@ -31,11 +60,15 @@ func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateDa
 	td.Warning = app.Session.PopString(r.Context(), "warning")
 	td.Error = app.Session.PopString(r.Context(), "error")
 	td.CSRFToken = nosurf.Token(r)
+
+	if app.Session.Exists(r.Context(), "user_id") {
+		td.IsAuthenticated = 1
+	}
 	return td
 }
 
-// RenderTeamplates for render templates
-func RenderTeamplates(w http.ResponseWriter, r *http.Request, tmpl string, td *models.TemplateData) error {
+// Template for render templates
+func Template(w http.ResponseWriter, r *http.Request, tmpl string, td *models.TemplateData) error {
 	var tc map[string]*template.Template
 
 	if app.UseCache {

@@ -13,7 +13,7 @@
             <div class="row">
                 <div class="col">
                   <h1 class="text-center mt-3">
-                    Welcomw to General's Suite
+                    Welcomw to General's Quarters
                   </h1> 
                   <p>
                     Your home away from homeYour home away from homeYour home away from homeYour home away from homeYour home away from homeYour home away from homeYour home away from homeYour home away from homeYour home away from homeYour home away from homeYour home away from homeYour home away from homeYour home away from homeYour home away from homeYour home away from homeYour home away from homeYour home away from homeYour home away from homeYour home away from homeYour home away from homeYour home away from homeYour home away from homeYour home away from homeYour home away from homeYour home away from homeYour home away from homeYour home away from homeYour home away from homeYour home away from homeYour home away from homeYour home away from home
@@ -71,6 +71,7 @@
               format: 'yyyy-mm-dd',
               showOnFocus: true,
               orientation: "top auto",
+              minDate: new Date(),
 
             })
           },
@@ -86,6 +87,7 @@
           let form = document.getElementById("check-availability-form")
           let formData = new FormData(form);
           formData.append("csrf_token", "{{.CSRFToken}}");
+          formData.append("room_id", "1");
 
           fetch('/search-availability-json', {
             method: "post",
@@ -93,9 +95,26 @@
           })
             .then(response => response.json())
             .then(data => {
-              console.log(data);
-              console.log(data.ok);
-              console.log(data.message);
+               if (data.ok) {
+                attention.custom({
+                  icon: "success",
+                  showConfirmButton: false,
+                  showCancelButton: false,
+                  msg: '<p>Room is Available</p>'
+                     + '<p><a href="/book-room?id='
+                     + data.room_id
+                     + '&s='
+                     + data.start_date
+                     + '&e='
+                     + data.end_date
+                     + '" class="btn btn-primary">'
+                     + 'BookNow!</a></p>',
+                })
+              } else {
+                  attention.error({
+                    msg: "No Availability",
+                  })
+              }
 
             })
         }

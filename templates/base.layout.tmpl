@@ -16,7 +16,7 @@
 
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
-              <a class="navbar-brand" href="#">Navbar</a>
+              <a class="navbar-brand" href="#">&nbsp;</a>
               <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
               </button>
@@ -32,16 +32,31 @@
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                       Rooms
                     </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                      <li><a class="dropdown-item" href="/generals-quarters">General's quarters</a></li>
-                      <li><a class="dropdown-item" href="/majors-suite">Major's suite</a></li>
-                    </ul>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <a class="dropdown-item" href="/generals-quarters">General's quarters</a>
+                      <a class="dropdown-item" href="/majors-suite">Major's suite</a>
+                    </div>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="/contact">Contact</a>
+                    <a class="nav-link" href="/search-availability" tabindex="-1" aria-disabled="true">Book Now!</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="/search-availability">Make reservation Now!</a>
+                    <a class="nav-link" href="/contact" tabindex="-1" aria-disabled="true">Contact</a>
+                  </li>
+                  <li class="nav-item">
+                    {{if eq .IsAuthenticated 1}}
+                      <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          Admin
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                          <a class="dropdown-item" href="/admin/dashboard">Dashboard</a>
+                          <a class="dropdown-item" href="/user/logout">Logout</a>
+                        </div>
+                      </li>
+                    {{else}}
+                      <a class="nav-link" href="/user/login" tabindex="-1" aria-disabled="true">Login</a>
+                    {{end}}
                   </li>
                 </ul>
               </div>
@@ -77,6 +92,8 @@
     <script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.2.0/dist/js/datepicker-full.min.js"></script>
     <script src="https://unpkg.com/notie"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/static/js/app.js"></script>
+    
 
     {{block "js" .}}
 
@@ -136,119 +153,6 @@
       {{with .Warning}}
       notify("{{.}}", "warning")
       {{end}}
-
-
-      // Promt is our JavaScript module for all alerts, notifications and custom popup dialogs
-      function Prompt() {
-        let toast = function(c) {
-          const {
-            msg = "",
-            icon = "success",
-            position = "top-end",
-          } = c;
-
-          const Toast = Swal.mixin({
-
-            toast: true,
-            title: msg,
-            icon: icon,
-            position: position,
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-            didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
-          }
-        })
-
-            Toast.fire({})
-        }
-
-        let success = function(c) {
-          const {
-            msg = "",
-            title = "",
-            footer = "",
-          } = c;
-
-          Swal.fire({
-            icon: 'success',
-            title: title,
-            text: msg,
-            footer: footer,
-        })
-        }
-
-        let error = function(c) {
-          const {
-            msg = "",
-            title = "",
-            footer = "",
-          } = c;
-
-          Swal.fire({
-            icon: 'error',
-            title: title,
-            text: msg,
-            footer: footer,
-          })
-        }
-
-      async function custom(c) {
-        const {
-          msg = "",
-          title = "",
-        } = c;
-
-        const { value: result } = await Swal.fire({
-          title: title,
-          html: msg,
-          backdrop: true,
-          focusConfirm: true,
-          showCancelButton: true,
-          showConfirmButton: true,
-          willOpen: () => {
-            if (c.willOpen !== undefined) {
-              c.willOpen();
-            }
-          },
-          preConfirm: () => {
-            return [
-              document.getElementById('start').value,
-              document.getElementById('end').value
-            ]
-          },
-          didOpen: () => {
-            if (c.didOpen !== undefined) {
-              c.didOpen();
-            }
-          }
-        })
-
-          if (result) {
-            if (result.dismiss !== Swal.DismissReason.cancel) {
-              if (result.value !== "") {
-                if (c.callback !== undefined) {
-                  c.callback(result);
-                }
-              } else {
-                c.callback(false);
-              }
-            } else {
-              c.callback(false);
-            }
-          }
-        }
-
-        
-          return {
-            toast: toast,
-            success: success,
-            error: error,
-            custom: custom
-          }
-        }
       </script>
 
     </body>

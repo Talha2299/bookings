@@ -1,0 +1,2 @@
+go build -o Bookings "cmd/web/main.go" "cmd/web/routes.go" "cmd/web/middleware.go" "cmd/web/send-mail.go"
+go run "cmd/web/main.go" "cmd/web/routes.go" "cmd/web/middleware.go" "cmd/web/send-mail.go" -dbname=dbname -dbuser=username -dbpass=password -cache=false -production=false
